@@ -8,6 +8,88 @@ import dijkstra from 'dijkstrajs';
 
 function GraphVisualization() {
   const { TabPane } = Tabs;
+
+  const { Option } = Select;
+  const { Item } = Form;
+
+  const InitialSimboloRestricciones = [
+    {
+      "id": 2,
+      "nameSimbolo": "<=",
+    }
+    ,
+    {
+      "id": 3,
+      "nameSimbolo": "=",
+    }
+    ,
+    {
+      "id": 4,
+      "nameSimbolo": ">=",
+    }
+  ];
+
+
+  const InitialMatriz = [
+    {
+      key: 0,
+      x: 5,
+      y: 6,
+      simbolo: "<=",
+      simbolo_id: 2,
+      restriccion: 1
+    },
+    {
+      key: 1,
+      x: 4,
+      y: 3,
+      simbolo: "<",
+      simbolo_id: 1,
+      restriccion: 2
+    }
+  ];
+
+
+  const layout = {
+    labelCol: {
+      span: 8
+    },
+    wrapperCol: {
+      span: 18
+    }
+  };
+  const initailForm = {
+    grafos: 2,
+    relaciones: 2
+  };
+  const [Simbolo, setSimbolo] = useState(InitialSimboloRestricciones);
+  const [Matriz, setMatriz] = useState(InitialMatriz);
+
+  const [modalInsertar, setModalInsertar] = useState(true);
+  const [fromData, setFormData] = useState(initailForm);
+
+  const [rutaCortaSimboloData, setrutaCortaSimbolo] = useState('');
+  const [rutaLargaSimboloData, setrutaLargaSimbolo] = useState('');
+  const [rutaCortaTotalData, setrutaCortaTotal] = useState('');
+  const [rutaLargaTotalData, setrutaLargaTotal] = useState('');
+  
+
+
+  const abrirCerrarModalInsertar = () => {
+    setModalInsertar(!modalInsertar);
+  }
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = (Mensaje) => {
+    messageApi.open({
+      type: 'success',
+      content: Mensaje,
+    });
+  };
+
+
+
+
+
   const graph = {
     nodes: [
       { id: 1, label: "Start" },
@@ -15,7 +97,7 @@ function GraphVisualization() {
       { id: 3, label: "B", },
       { id: 4, label: "C", },
       { id: 5, label: "D", },
-      { id: 6, label: "Finish", }
+      { id: 6, label: "FinishPrueba", }
     ],
     edges: [
       { from: 1, to: 2, title: "Edge Start to A tooltip text", label: "5" },
@@ -30,84 +112,8 @@ function GraphVisualization() {
       //   { from: 2, to: 7, title: "Edge 2 to 7 tooltip text" }
     ]
   };
-  const { Option } = Select;
-  const { Item } = Form;
 
-  const layout = {
-    labelCol: {
-      span: 8
-    },
-    wrapperCol: {
-      span: 18
-    }
-  };
-  const initailForm = {
-    grafos: 2,
-    relaciones: 2
-  };
-  const [messageApi, contextHolder] = message.useMessage();
-  const success = (Mensaje) => {
-    messageApi.open({
-      type: 'success',
-      content: Mensaje,
-    });
-  };
-
-  const onClickPost = () => {
-    console.log('entro post', fromData)
-    console.log('entro post', Matriz)
-
-    // Crear un grafo dirigido
-    const grafoDirigido = {};
-    for (const enlace of Matriz) {
-      const { origen, destino, peso } = enlace;
-      if (!grafoDirigido[origen]) {
-        grafoDirigido[origen] = {};
-      }
-      grafoDirigido[origen][destino] = parseInt(peso, 10);
-    }
-    // const rutaMasCorta = dijkstra.find_path(grafoDirigido, "0", "90");
-    // console.log("Ruta más corta:", rutaMasCorta);
-     console.log("grafoDirigido:", grafoDirigido); 
-
-    const {rutaMasLarga , pesoTotalLarga } = bellmanFordLarga(Matriz, "0", "90");
-    const {rutaMasCorta , pesoTotalCorta } = bellmanFordCorta(Matriz, "0", "90");
-    console.log("Ruta más larga:", rutaMasLarga);
-    console.log("Ruta más pesoTotalLarga:", pesoTotalLarga);
-    console.log("Ruta más corta:", rutaMasCorta);
-    console.log("Ruta más pesoTotalCorta:", pesoTotalCorta);
-
-    let rutaLargaSimbolo={}
-    for (let index = 0; index < rutaMasLarga.length; index++) {      
-      for (let index2 = 0; index2 < Simbolo.length; index2++) {
-        if (rutaMasLarga[index]==Simbolo[index2].id) {
-          rutaLargaSimbolo.push(Simbolo[index2].nameSimbolo)
-        }        
-      }      
-    }
-    let rutaCortaSimbolo={}
-    for (let index = 0; index < pesoTotalCorta.length; index++) {      
-      for (let index2 = 0; index2 < Simbolo.length; index2++) {
-        if (rutaMasLarga[index]==Simbolo[index2].id) {
-          rutaCortaSimbolo.push(Simbolo[index2].nameSimbolo)
-        }        
-      }      
-    }
-
-    console.log("Ruta más rutaCortaSimbolo:",rutaCortaSimbolo) 
-    console.log("Ruta más rutaLargaSimbolo:",rutaLargaSimbolo)
-    console.log("Ruta más corta:",Simbolo)
-
-    //createData(fromData)
-    // abrirCerrarModalInsertar();
-    success('Se Registro Correctamente')
-  }
-
-
-
-
-
-
+  const [grafoModelo, setgrafoModelo] = useState(graph);
 
   // Encontrar la ruta más larga con Bellman-Ford
   function bellmanFordLarga(grafo, inicio, fin) {
@@ -196,53 +202,103 @@ function GraphVisualization() {
 
 
 
+  const onClickPost = () => {
+    console.log('entro post', fromData)
+    console.log('entro post', Matriz)
 
-
-  const InitialSimboloRestricciones = [
-    {
-      "id": 2,
-      "nameSimbolo": "<=",
+    // Crear un grafo dirigido
+    const grafoDirigido = {};
+    for (const enlace of Matriz) {
+      const { origen, destino, peso } = enlace;
+      if (!grafoDirigido[origen]) {
+        grafoDirigido[origen] = {};
+      }
+      grafoDirigido[origen][destino] = parseInt(peso, 10);
     }
-    ,
-    {
-      "id": 3,
-      "nameSimbolo": "=",
+    // const rutaMasCorta = dijkstra.find_path(grafoDirigido, "0", "90");
+    // console.log("Ruta más corta:", rutaMasCorta);
+     console.log("grafoDirigido:", grafoDirigido); 
+
+    const {rutaMasLarga , pesoTotalLarga } = bellmanFordLarga(Matriz, "0", "90");
+    const {rutaMasCorta , pesoTotalCorta } = bellmanFordCorta(Matriz, "0", "90");
+    console.log("Ruta más larga:", rutaMasLarga);
+    console.log("Ruta más pesoTotalLarga:", pesoTotalLarga);
+    console.log("Ruta más corta:", rutaMasCorta);
+    console.log("Ruta más pesoTotalCorta:", pesoTotalCorta);
+
+    let rutaLargaSimbolo=[]
+    for (let index = 0; index < rutaMasLarga.length; index++) {      
+      for (let index2 = 0; index2 < Simbolo.length; index2++) {
+        if (rutaMasLarga[index]==Simbolo[index2].id) {
+          rutaLargaSimbolo.push(Simbolo[index2].nameSimbolo)
+        }        
+      }      
     }
-    ,
-    {
-      "id": 4,
-      "nameSimbolo": ">=",
+    let rutaCortaSimbolo=[]
+    for (let index = 0; index < rutaMasCorta.length; index++) {      
+      for (let index2 = 0; index2 < Simbolo.length; index2++) {
+        if (rutaMasCorta[index]==Simbolo[index2].id) {
+          rutaCortaSimbolo.push(Simbolo[index2].nameSimbolo )
+        }        
+      }      
     }
-  ];
+
+    console.log("Ruta más rutaCortaSimbolo:",rutaCortaSimbolo) 
+    console.log("Ruta más rutaLargaSimbolo:",rutaLargaSimbolo)
+    console.log("Ruta más corta:",Simbolo)
+
+    setrutaCortaSimbolo(rutaCortaSimbolo)
+    setrutaLargaSimbolo(rutaLargaSimbolo)
+    setrutaLargaTotal(pesoTotalLarga)
+    setrutaCortaTotal(pesoTotalCorta)
 
 
-  const InitialMatriz = [
-    {
-      key: 0,
-      x: 5,
-      y: 6,
-      simbolo: "<=",
-      simbolo_id: 2,
-      restriccion: 1
-    },
-    {
-      key: 1,
-      x: 4,
-      y: 3,
-      simbolo: "<",
-      simbolo_id: 1,
-      restriccion: 2
+    let  nodes = [] 
+    let  edges = [] 
+
+    for (let index = 0; index < fromData.grafos; index++) {
+      nodes.push({id:Simbolo[index].id,label:Simbolo[index].nameSimbolo})      
     }
-  ];
+    
+    for (let index = 0; index < fromData.relaciones; index++) {
+      edges.push({
+        from:Matriz[index].origen,
+        to:Matriz[index].destino,
+        title:'Edge '+Matriz[index].origenSimbolo+' to '+Matriz[index].destinoSimbolo+' tooltip text',
+        label:Matriz[index].peso,
+      })      
+    }
+    const graph = {nodes,edges }
+    console.log('graph',graph)
+    setgrafoModelo(graph);
 
-  const [Simbolo, setSimbolo] = useState(InitialSimboloRestricciones);
-  const [Matriz, setMatriz] = useState(InitialMatriz);
-
-  const [modalInsertar, setModalInsertar] = useState(true);
-  const [fromData, setFormData] = useState(initailForm);
-  const abrirCerrarModalInsertar = () => {
-    setModalInsertar(!modalInsertar);
+    // const graph = {
+    //   nodes: [
+    //     { id: 1, label: "Start" },
+    //     { id: 2, label: "A", },
+    //     { id: 3, label: "B", },
+    //     { id: 4, label: "C", },
+    //     { id: 5, label: "D", },
+    //     { id: 6, label: "FinishPrueba", }
+    //   ],
+    //   edges: [
+    //     { from: 1, to: 2, title: "Edge Start to A tooltip text", label: "5" },
+    //     { from: 1, to: 3, title: "Edge Start to B tooltip text", label: "2" },
+    //     { from: 2, to: 4, title: "Edge A to C tooltip text", label: "4" },
+    //     { from: 2, to: 5, title: "Edge A to D tooltip text", label: "2" },
+    //     { from: 3, to: 2, title: "Edge B to A tooltip text", label: "8" },
+    //     { from: 3, to: 5, title: "Edge B to D tooltip text", label: "7" },
+    //     { from: 4, to: 5, title: "Edge C to D tooltip text", label: "6" },
+    //     { from: 4, to: 6, title: "Edge C to Finish tooltip text", label: "3" },
+    //     { from: 5, to: 6, title: "Edge D to Finish tooltip text", label: "1" },
+    //     //   { from: 2, to: 7, title: "Edge 2 to 7 tooltip text" }
+    //   ]
+    // };
+    
+    success('Se Registro Correctamente')
   }
+
+
   // const options = {
   //     layout: {
   //         // hierarchical: true
@@ -267,7 +323,7 @@ function GraphVisualization() {
     edges: {
       color: '#1D1D1D',
     },
-    height: "1000px",
+    height: "600px",
     interaction: {
       //   hover: true,
       navigationButtons: true,
@@ -387,6 +443,9 @@ function GraphVisualization() {
 
     console.log(Matriz);
   }
+  const estiloInline = {
+    display: 'inline',
+  };
 
   const events = {
     select: function (event) {
@@ -534,14 +593,7 @@ function GraphVisualization() {
                   ))}
 
 
-
-
-
                 </Col>
-
-
-
-
 
               </Row>
 
@@ -565,20 +617,36 @@ function GraphVisualization() {
 
 
       {!modalInsertar && <Graph
-        graph={graph}
+        graph={grafoModelo}
         options={options}
         events={events}
         getNetwork={network => {
           //  if you want access to vis.js network api you can set the state in a parent component using this property
         }}
+
+
+        
       />
       }
-
+      {!modalInsertar && <h2>
+        <p>Ruta mas Corta :{rutaCortaSimboloData.map(item => (           
+           <p style={estiloInline}> '{item}',  </p> 
+        ))} </p> 
+        <p>Peso de ruta mas Corta :{rutaCortaTotalData} </p> 
+        
+        <p>Ruta mas Larga :{rutaLargaSimboloData.map(item => (           
+           <p style={estiloInline}> '{item}',  </p> 
+        ))} </p> 
+        <p>Peso de ruta mas Larga :{rutaLargaTotalData} </p> 
+      </h2>
+      }
     </>
 
   );
 
 
 }
+
+
 
 export { GraphVisualization };
