@@ -72,7 +72,7 @@ function GraphVisualization() {
   const [rutaLargaSimboloData, setrutaLargaSimbolo] = useState('');
   const [rutaCortaTotalData, setrutaCortaTotal] = useState('');
   const [rutaLargaTotalData, setrutaLargaTotal] = useState('');
-  
+
 
 
   const abrirCerrarModalInsertar = () => {
@@ -153,8 +153,8 @@ function GraphVisualization() {
       rutaMasLarga.unshift(actual);
       actual = predecesores[actual];
     }
-    console.log('pesosTotales[fin]',pesosTotales[fin])
-    return {rutaMasLarga, pesoTotalLarga: pesosTotales[fin] } ;
+    console.log('pesosTotales[fin]', pesosTotales[fin])
+    return { rutaMasLarga, pesoTotalLarga: pesosTotales[fin] };
   }
 
   // Encontrar la ruta más corta con Bellman-Ford
@@ -217,35 +217,35 @@ function GraphVisualization() {
     }
     // const rutaMasCorta = dijkstra.find_path(grafoDirigido, "0", "90");
     // console.log("Ruta más corta:", rutaMasCorta);
-     console.log("grafoDirigido:", grafoDirigido); 
+    console.log("grafoDirigido:", grafoDirigido);
 
-    const {rutaMasLarga , pesoTotalLarga } = bellmanFordLarga(Matriz, "0", "90");
-    const {rutaMasCorta , pesoTotalCorta } = bellmanFordCorta(Matriz, "0", "90");
+    const { rutaMasLarga, pesoTotalLarga } = bellmanFordLarga(Matriz, "0", "90");
+    const { rutaMasCorta, pesoTotalCorta } = bellmanFordCorta(Matriz, "0", "90");
     console.log("Ruta más larga:", rutaMasLarga);
     console.log("Ruta más pesoTotalLarga:", pesoTotalLarga);
     console.log("Ruta más corta:", rutaMasCorta);
     console.log("Ruta más pesoTotalCorta:", pesoTotalCorta);
 
-    let rutaLargaSimbolo=[]
-    for (let index = 0; index < rutaMasLarga.length; index++) {      
+    let rutaLargaSimbolo = []
+    for (let index = 0; index < rutaMasLarga.length; index++) {
       for (let index2 = 0; index2 < Simbolo.length; index2++) {
-        if (rutaMasLarga[index]==Simbolo[index2].id) {
+        if (rutaMasLarga[index] == Simbolo[index2].id) {
           rutaLargaSimbolo.push(Simbolo[index2].nameSimbolo)
-        }        
-      }      
+        }
+      }
     }
-    let rutaCortaSimbolo=[]
-    for (let index = 0; index < rutaMasCorta.length; index++) {      
+    let rutaCortaSimbolo = []
+    for (let index = 0; index < rutaMasCorta.length; index++) {
       for (let index2 = 0; index2 < Simbolo.length; index2++) {
-        if (rutaMasCorta[index]==Simbolo[index2].id) {
-          rutaCortaSimbolo.push(Simbolo[index2].nameSimbolo )
-        }        
-      }      
+        if (rutaMasCorta[index] == Simbolo[index2].id) {
+          rutaCortaSimbolo.push(Simbolo[index2].nameSimbolo)
+        }
+      }
     }
 
-    console.log("Ruta más rutaCortaSimbolo:",rutaCortaSimbolo) 
-    console.log("Ruta más rutaLargaSimbolo:",rutaLargaSimbolo)
-    console.log("Ruta más corta:",Simbolo)
+    console.log("Ruta más rutaCortaSimbolo:", rutaCortaSimbolo)
+    console.log("Ruta más rutaLargaSimbolo:", rutaLargaSimbolo)
+    console.log("Ruta más corta:", Simbolo)
 
     setrutaCortaSimbolo(rutaCortaSimbolo)
     setrutaLargaSimbolo(rutaLargaSimbolo)
@@ -253,25 +253,25 @@ function GraphVisualization() {
     setrutaCortaTotal(pesoTotalCorta)
 
 
-    let  nodes = [] 
-    let  edges = [] 
+    let nodes = []
+    let edges = []
 
     for (let index = 0; index < fromData.grafos; index++) {
-      nodes.push({id:Simbolo[index].id,label:Simbolo[index].nameSimbolo})      
+      nodes.push({ id: Simbolo[index].id, label: Simbolo[index].nameSimbolo })
     }
-    
+
     for (let index = 0; index < fromData.relaciones; index++) {
       edges.push({
-        from:Matriz[index].origen,
-        to:Matriz[index].destino,
-        title:'Edge '+Matriz[index].origenSimbolo+' to '+Matriz[index].destinoSimbolo+' tooltip text',
-        label:Matriz[index].peso,
-      })      
+        from: Matriz[index].origen,
+        to: Matriz[index].destino,
+        title: 'Edge ' + Matriz[index].origenSimbolo + ' to ' + Matriz[index].destinoSimbolo + ' tooltip text',
+        label: Matriz[index].peso,
+      })
     }
-    const graph = {nodes,edges }
-    console.log('graph',graph)
+    const graph = { nodes, edges }
+    console.log('graph', graph)
     setgrafoModelo(graph);
-
+    abrirCerrarModalInsertar();
     // const graph = {
     //   nodes: [
     //     { id: 1, label: "Start" },
@@ -294,8 +294,8 @@ function GraphVisualization() {
     //     //   { from: 2, to: 7, title: "Edge 2 to 7 tooltip text" }
     //   ]
     // };
-    
-    success('Se Registro Correctamente')
+   
+    // success('Se Registro Correctamente')
   }
 
 
@@ -625,19 +625,21 @@ function GraphVisualization() {
         }}
 
 
-        
+
       />
       }
+      {!modalInsertar && <Button type="primary" onClick={abrirCerrarModalInsertar}>Generar Nuevo Modelo</Button>
+      }
       {!modalInsertar && <h2>
-        <p>Ruta mas Corta :{rutaCortaSimboloData.map(item => (           
-           <p style={estiloInline}> '{item}',  </p> 
-        ))} </p> 
-        <p>Peso de ruta mas Corta :{rutaCortaTotalData} </p> 
-        
-        <p>Ruta mas Larga :{rutaLargaSimboloData.map(item => (           
-           <p style={estiloInline}> '{item}',  </p> 
-        ))} </p> 
-        <p>Peso de ruta mas Larga :{rutaLargaTotalData} </p> 
+        <p>Ruta mas Corta :{rutaCortaSimboloData.map(item => (
+          <p style={estiloInline}> '{item}',  </p>
+        ))} </p>
+        <p>Peso de ruta mas Corta :{rutaCortaTotalData} </p>
+
+        <p>Ruta mas Larga :{rutaLargaSimboloData.map(item => (
+          <p style={estiloInline}> '{item}',  </p>
+        ))} </p>
+        <p>Peso de ruta mas Larga :{rutaLargaTotalData} </p>
       </h2>
       }
     </>
